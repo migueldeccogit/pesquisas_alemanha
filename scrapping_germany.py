@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
+import numpy as np
 
 # Definir cores específicas para cada partido ou coalizão
 CATEGORY_COLORS = {
@@ -68,7 +69,7 @@ def aplicar_barreira(row, colunas_valor, barreira):
 
 
 # Função para carregar e processar os dados da página, cacheada para evitar repetição
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=21600)
 def carregar_dados():
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -86,7 +87,7 @@ def carregar_dados():
     df["Fieldwork date"] = pd.to_datetime(
         df["Fieldwork date"].apply(lambda x: x.split("–")[-1].strip()), errors="coerce"
     )
-    df = df[df["Fieldwork date"] >= "2023-12-31"].replace("–", 0)
+    df = df[df["Fieldwork date"] >= "2023-12-31"].replace("–", np.nan)
     df = df.rename(columns={"Grüne": "Green"})
 
     # Criação do DataFrame de médias
@@ -134,7 +135,8 @@ def carregar_dados():
 
 
 # Aplicar a função ao DataFrame
-
+if st.button("Atualizar Dados"):
+    st.rerun()
 
 # Carregar os dados processados
 df, df_media, df_ponderado, df_ponderado_media = carregar_dados()
