@@ -68,7 +68,7 @@ def aplicar_barreira(row, colunas_valor, barreira):
 
 
 # Função para carregar e processar os dados da página, cacheada para evitar repetição
-@st.cache_data(ttl=21600)
+@st.cache_data(ttl=300)
 def carregar_dados():
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
