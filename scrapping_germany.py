@@ -69,7 +69,6 @@ def aplicar_barreira(row, colunas_valor, barreira):
 
 
 # Função para carregar e processar os dados da página, cacheada para evitar repetição
-@st.cache_data(ttl=21600)
 def carregar_dados():
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -139,6 +138,7 @@ if st.button("Atualizar Dados"):
     st.rerun()
 
 # Carregar os dados processados
+@st.cache_data(ttl=600)
 df, df_media, df_ponderado, df_ponderado_media = carregar_dados()
 
 # Configuração do título do dashboard
