@@ -67,9 +67,24 @@ def aplicar_barreira(row, colunas_valor, barreira):
 
     return row
 
+# Função para adicionar linha horizontal se necessário
+def add_threshold_line(fig, data, threshold=50):
+    if data["Percentual"].max() > threshold:
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            line_color="grey",
+        )
+def add_vertical_line(fig):
+    fig.add_vline(
+        x=datetime.datetime(2024, 11, 7),
+        line_width=2,
+        line_dash="dash",
+        line_color="grey",
+    )
 
 # Função para carregar e processar os dados da página, cacheada para evitar repetição
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=300)
 def carregar_dados():
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -134,10 +149,6 @@ def carregar_dados():
     return df, df_media, df_ponderado, df_ponderado_media
 
 
-# Aplicar a função ao DataFrame
-if st.button("Atualizar Dados"):
-    st.rerun()
-
 # Carregar os dados processados
 df, df_media, df_ponderado, df_ponderado_media = carregar_dados()
 
@@ -188,17 +199,6 @@ df_ponderado_media_filtered = df_ponderado_media[
     (df_ponderado_media["Fieldwork date"] >= pd.to_datetime(selected_date_range[0]))
     & (df_ponderado_media["Fieldwork date"] <= pd.to_datetime(selected_date_range[1]))
 ]
-
-
-# Função para adicionar linha horizontal se necessário
-def add_threshold_line(fig, data, threshold=50):
-    if data["Percentual"].max() > threshold:
-        fig.add_hline(
-            y=threshold,
-            line_dash="dash",
-            line_color="black",
-        )
-
 
 # Colunas para os gráficos
 col1, col2 = st.columns(2)
