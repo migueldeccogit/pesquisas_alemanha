@@ -226,6 +226,7 @@ with col1:
             )
         )
     add_threshold_line(fig1, df_firm_filtered)
+    add_vertical_line(fig1)
     fig1.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(
         fig1, use_container_width=True, key="plotly_chart1"
@@ -280,6 +281,7 @@ with col2:
             )
         )
     add_threshold_line(fig2, df_media_filtered)
+    add_vertical_line(fig2)
     fig2.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(fig2, use_container_width=True, key="plotly_chart2")
 
@@ -309,6 +311,7 @@ with col3:
             )
         )
     add_threshold_line(fig3, df_firm_filtered)
+    add_vertical_line(fig3)
     fig3.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(
         fig3, use_container_width=True, key="plotly_chart3"
@@ -365,5 +368,6 @@ with col4:
             )
         )
     add_threshold_line(fig4, df_ponderado_media_filtered)
+    add_vertical_line(fig4)
     fig4.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(fig4, use_container_width=True, key="plotly_chart4")
