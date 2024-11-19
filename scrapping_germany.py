@@ -22,6 +22,8 @@ CATEGORY_COLORS = {
     "CDU + SPD + FDP": "#eead2d",
     "CDU + SPD + Green": "#151518",
     "SPD + Green + FDP": "#f77315",
+    "CDU + FDP + Green": "#264478",
+    "CDU + FDP": "#a0c89a",
 }
 
 # Configuração da página
@@ -39,6 +41,8 @@ def adicionar_coalisoes(df):
     df["CDU + SPD + FDP"] = df["Union"] + df["SPD"] + df["FDP"]
     df["CDU + SPD + Green"] = df["Union"] + df["SPD"] + df["Green"]
     df["SPD + Green + FDP"] = df["SPD"] + df["Green"] + df["FDP"]
+    df["CDU + FDP + Green"] = df["Union"] + df["Green"] + df["FDP"]
+    df["CDU + FDP"] = df["Union"] + df["FDP"]
     return df
 
 
@@ -68,6 +72,7 @@ def aplicar_barreira(row, colunas_valor, barreira):
 
     return row
 
+
 # Função para adicionar linha horizontal se necessário
 def add_threshold_line(fig, data, threshold=50):
     if data["Percentual"].max() > threshold:
@@ -76,6 +81,8 @@ def add_threshold_line(fig, data, threshold=50):
             line_dash="dash",
             line_color="grey",
         )
+
+
 def add_vertical_line(fig):
     fig.add_vline(
         x=datetime.datetime(2024, 11, 7),
@@ -84,7 +91,10 @@ def add_vertical_line(fig):
         line_color="grey",
     )
 
+
 # Função para carregar e processar os dados da página, cacheada para evitar repetição
+
+
 @st.cache_data(ttl=300)
 def carregar_dados():
     response = requests.get(url)
@@ -200,6 +210,7 @@ df_ponderado_media_filtered = df_ponderado_media[
     (df_ponderado_media["Fieldwork date"] >= pd.to_datetime(selected_date_range[0]))
     & (df_ponderado_media["Fieldwork date"] <= pd.to_datetime(selected_date_range[1]))
 ]
+
 
 # Colunas para os gráficos
 col1, col2 = st.columns(2)
@@ -372,3 +383,41 @@ with col4:
     add_vertical_line(fig4)
     fig4.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(fig4, use_container_width=True, key="plotly_chart4")
+
+df_bar = df_media.loc[df_media["Fieldwork date"] == df_media["Fieldwork date"].max()]
+df_bar = df_bar[
+    [
+        "CDU + SPD",
+        "CDU + Green",
+        "CDU + SPD + FDP",
+        "CDU + SPD + Green",
+        "SPD + Green + FDP",
+        "CDU + FDP + Green",
+        "CDU + FDP",
+    ]
+]
+
+# coalition_colors = [CATEGORY_COLORS[coalition] for coalition in df_bar.columns]
+st.subheader("Opinion Polls - Potential coalition options, %")
+fig5 = go.Figure()
+fig5.add_trace(
+    go.Bar(
+        x=list(df_bar.keys()),  # Nomes das coalizões no eixo X
+        y=list(df_bar.iloc[0].values),
+        text=[
+            f"{val.round(1)}%" for val in df_bar.iloc[0].values
+        ],  # Adiciona os números como rótulos
+        textposition="outside",
+        textfont=dict(size=20),  # Valores percentuais no eixo Y
+        marker=dict(color="#4a3c30"),  # Cor das barras
+        width=0.3,
+    )
+)
+fig5.update_layout(
+    xaxis=dict(tickfont=dict(size=20)),
+    yaxis=dict(range=[0, 80], gridcolor="black", gridwidth=1),
+    template="plotly_white",
+    height=600,
+    width=1000,
+)
+st.plotly_chart(fig5, use_container_width=True, key="plotly_chart5")
