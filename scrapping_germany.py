@@ -99,21 +99,28 @@ def add_vertical_line(fig):
 def carregar_dados():
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
-    table = soup.find("table", {"class": "wikitable"})
-    headers = [
-        header.text.strip() for header in table.find_all("th") if header.text.strip()
-    ]
-    rows = [
-        [cell.text.strip() for cell in row.find_all(["td", "th"])]
-        for row in table.find_all("tr")[1:]
-    ]
+    tables = soup.find_all("table", {"class": "wikitable"})
+    dfs = []
+    for table in tables[:2]:
+        headers = [
+            header.text.strip() for header in table.find_all("th") if header.text.strip()
+        ]
+        rows = [
+            [cell.text.strip() for cell in row.find_all(["td", "th"])]
+            for row in table.find_all("tr")[1:]
+        ]
 
-    # Criação do DataFrame inicial
-    df = pd.DataFrame(rows, columns=headers).drop(0)
-    df["Fieldwork date"] = pd.to_datetime(
-        df["Fieldwork date"].apply(lambda x: x.split("–")[-1].strip()), errors="coerce"
-    )
-    df = df[df["Fieldwork date"] >= "2023-12-31"].replace("–", np.nan)
+        # Criação do DataFrame inicial
+        df_temp = pd.DataFrame(rows, columns=headers).drop(0)
+        df_temp["Fieldwork date"] = pd.to_datetime(
+            df_temp["Fieldwork date"].apply(lambda x: x.split("–")[-1].strip()), errors="coerce"
+        )
+        df_temp = df_temp.replace("–", np.nan)  # Substituir traços por NaN
+        dfs.append(df_temp)
+
+    df = pd.concat(dfs, ignore_index=True)
+    df = df[df["Fieldwork date"] >= "2023-12-31"]
+    
     df = df.rename(columns={"Grüne": "Green"})
 
     # Criação do DataFrame de médias
