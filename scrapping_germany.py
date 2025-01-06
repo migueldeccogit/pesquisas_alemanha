@@ -82,6 +82,14 @@ def add_threshold_line(fig, data, threshold=50):
             line_color="grey",
         )
 
+def add_threshold_line_2(fig, data, threshold=66.6):
+    if data["Percentual"].max() > threshold:
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            line_color="grey",
+        )
+
 
 def add_vertical_line(fig):
     fig.add_vline(
@@ -330,6 +338,7 @@ with col3:
             )
         )
     add_threshold_line(fig3, df_firm_filtered)
+    add_threshold_line_2(fig3, df_firm_filtered)
     add_vertical_line(fig3)
     fig3.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(
@@ -387,6 +396,7 @@ with col4:
             )
         )
     add_threshold_line(fig4, df_ponderado_media_filtered)
+    add_threshold_line_2(fig4, df_ponderado_media_filtered)
     add_vertical_line(fig4)
     fig4.update_layout(xaxis_title="Data", yaxis_title="Percentual (%)")
     st.plotly_chart(fig4, use_container_width=True, key="plotly_chart4")
